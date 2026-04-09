@@ -1,0 +1,154 @@
+﻿@page
+@model IndexModel
+@using System.Text.Json
+@{
+    ViewData["Title"] = "Simulador de Investimento";
+}
+
+<div class="container py-4">
+    <h1 class="mb-4">Simulador de Investimento</h1>
+
+    <!-- INTERFACE: formulário de entrada -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="post" class="row g-3">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="col-md-4">
+                    <label asp-for="ValorInicial" class="form-label">Valor Inicial (R$)</label>
+                    <input asp-for="ValorInicial" class="form-control" type="number" step="0.01" min="0" />
+                    <span asp-validation-for="ValorInicial" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="TaxaJuros" class="form-label">Taxa de Juros Mensal (%)</label>
+                    <input asp-for="TaxaJuros" class="form-control" type="number" step="0.01" min="0" />
+                    <span asp-validation-for="TaxaJuros" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="TempoMeses" class="form-label">Tempo (meses)</label>
+                    <input asp-for="TempoMeses" class="form-control" type="number" min="1" />
+                    <span asp-validation-for="TempoMeses" class="text-danger"></span>
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Calcular</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (Model.HistoricoMeses?.Count > 0)
+    {
+        <!-- INTERFACE: cards com os resultados principais -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card text-bg-success h-100 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2">💰 Total Acumulado</h6>
+                        <h4 class="mb-0">@Model.MontanteFinal.ToString("C")</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-bg-info h-100 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2">📈 Total em Juros</h6>
+                        <h4 class="mb-0">@Model.TotalJuros.ToString("C")</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-bg-warning h-100 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2">🎯 Rentabilidade (%)</h6>
+                        <h4 class="mb-0">@Model.RentabilidadePercentual.ToString("N2")%</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!--gráfico da evolução -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title">Evolução do investimento</h5>
+            <canvas id="graficoInvestimento" height="100"></canvas>
+        </div>
+    </div>
+
+    @if (Model.ExtratoMeses?.Count > 0)
+    {
+        <!-- tabela detalhada mês a mês -->
+        <div class="card shadow-sm mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Extrato mensal</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Mês</th>
+                                <th>Juros Mensais</th>
+                                <th>Saldo Acumulado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ExtratoMeses)
+                            {
+                                <tr>
+                                    <td>@item.Mes</td>
+                                    <td>@item.JurosMensais.ToString("C")</td>
+                                    <td>@item.SaldoAcumulado.ToString("C")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- API/BIBLIOTECA EXTERNA: Chart.js (via CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Dados vindos do back-end para montar o gráfico
+    const historicoMeses = @Html.Raw(JsonSerializer.Serialize(Model.HistoricoMeses));
+    const labels = historicoMeses.map((_, index) => `Mês ${index + 1}`);
+
+    const contexto = document.getElementById('graficoInvestimento');
+    if (contexto) {
+        new Chart(contexto, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Valor acumulado (R$)',
+                    data: historicoMeses,
+                    borderColor: 'rgb(13, 110, 253)',
+                    backgroundColor: 'rgba(13, 110, 253, 0.2)',
+                    tension: 0.25,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
