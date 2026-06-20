@@ -23,7 +23,30 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
                         </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Historico">Histórico</a>
+                            </li>
+                           
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/SimuladorSonho">Sonhos</a>
+                            </li>
+                        }
                     </ul>
+                    <div>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <span class="me-3">Olá, <strong>@User.Identity?.Name</strong></span>
+                            <a href="/Account/Logout" class="btn btn-outline-danger btn-sm">Sair</a>
+
+                        }
+                        else
+                        {
+                            <a asp-page="/Account/Login" class="btn btn-outline-primary btn-sm me-2">Entrar</a>
+                            <a asp-page="/Account/Register" class="btn btn-primary btn-sm">Registrar</a>
+                        }
+                    </div>
                 </div>
             </div>
         </nav>

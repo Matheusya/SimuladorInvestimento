@@ -1,0 +1,112 @@
+@page
+@model SimuladorInvestimento.Pages.HistoricoModel
+@{
+    ViewData["Title"] = "Histórico de Simulações";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+        <h1 class="mb-0">@ViewData["Title"]</h1>
+
+    
+    </div>
+    @if (Model.Simulacoes.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Data</th>
+                        <th>Valor Inicial</th>
+                        <th>Taxa de Juros</th>
+                        <th>Tempo (Meses)</th>
+                        <th>Montante Final</th>
+                        <th>Total de Juros</th>
+                        <th>Rentabilidade </th>
+                        <th>Descrição</th>
+                        <th> Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var simulacao in Model.Simulacoes)
+                    {
+                        <tr>
+                            <td>@simulacao.DataSimulacao.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>R$ @simulacao.ValorInicial.ToString("F2")</td>
+                            <td>@simulacao.TaxaJuros.ToString("F2")%</td>
+                            <td>@simulacao.TempoMeses</td>
+                            <td>R$ @simulacao.MontanteFinal.ToString("F2")</td>
+                            <td>R$ @simulacao.TotalJuros.ToString("F2")</td>
+                            <td>@simulacao.RentabilidadePercentual.ToString("F2")%</td>
+                            <td>@simulacao.Descricao</td>
+                            <td>
+                                <a asp-page="/Exportar" asp-page-handler="PdfSimulacao" asp-route-id="@simulacao.Id" class="btn btn-secondary btn-sm me-1">📄 PDF</a>
+                                <a asp-page="/Exportar" asp-page-handler="ExcelSimulacao" asp-route-id="@simulacao.Id" class="btn btn-success btn-sm me-1">📊 Excel</a>
+
+                                <form method="post" asp-page-handler="DeletarSimulacao" asp-route-id="@simulacao.Id" onsubmit="return confirm('Tem certeza que deseja excluir esta simulação?');" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            Você ainda não tem simulações registradas. <a href="/">Criar uma nova simulação</a>
+        </div>
+    }
+  
+
+    <h3 class="mt-5 mb-3">Histórico de Sonhos</h3>
+
+    @if (Model.HistoricoSonhos != null && Model.HistoricoSonhos.Any())
+    {
+        <div class="table-responsive shadow-sm">
+            <table class="table table-striped table-hover table-bordered mb-0">
+                <thead class="table-dark">
+                    <tr class="text-center">
+                        <th>Objetivo</th>
+                        <th>Valor do Sonho</th>
+                        <th>Valor Inicial</th>
+                        <th>Aporte Mensal</th>
+                        <th>Taxa Mensal</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var sonho in Model.HistoricoSonhos)
+                    {
+                        <tr class="text-center">
+                            <td class="fw-bold">@sonho.NomeObjetivo</td>
+                            <td>@sonho.ValorObjetivo.ToString("C")</td>
+                            <td>@sonho.ValorInicial.ToString("C")</td>
+                            <td>@sonho.AporteMensal.ToString("C")</td>
+                            <td>@sonho.TaxaJurosMensal.ToString("0.00")%</td>
+                            <td>
+                                <a asp-page="/Exportar" asp-page-handler="PdfSonho" asp-route-id="@sonho.Id" class="btn btn-secondary btn-sm me-1">📄 PDF</a>
+                                <a asp-page="/Exportar" asp-page-handler="ExcelSonho" asp-route-id="@sonho.Id" class="btn btn-success btn-sm me-1">📊 Excel</a>
+
+                                <a asp-page="/SimuladorSonho" asp-route-id="@sonho.Id" class="btn btn-warning btn-sm me-1">Editar</a>
+                                <form method="post" asp-page-handler="Deletar" asp-route-id="@sonho.Id" onsubmit="return confirm('Tem certeza que deseja excluir este sonho?');" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info mt-3" role="alert">
+            Você ainda não salvou nenhum sonho.
+        </div>
+    }
+
+</div> 
+</div>

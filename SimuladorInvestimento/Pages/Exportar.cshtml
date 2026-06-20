@@ -1,0 +1,34 @@
+@page
+@model SimuladorInvestimento.Pages.ExportarModel
+@{
+    ViewData["Title"] = "Exportar Simulações";
+}
+
+<div class="container mt-5">
+    <h1>@ViewData["Title"]</h1>
+
+    <div class="alert alert-info" role="alert">
+        Escolha o formato para exportar suas simulações:
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">📊 Exportar para Excel</h5>
+                    <p class="card-text">Exporte todas as suas simulações em um arquivo Excel (.xlsx) para análise detalhada.</p>
+                    <a href="?handler=ExportExcel" class="btn btn-success">Baixar Excel</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">📄 Exportar para PDF</h5>
+                    <p class="card-text">Gere um relatório em PDF com todas as suas simulações para compartilhar ou arquivar.</p>
+                    <a href="?handler=ExportPdf" class="btn btn-danger">Baixar PDF</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,63 @@
+﻿@page "{id:int?}"
+@model SimuladorInvestimento.Pages.SimuladorSonhoModel
+@{
+    ViewData["Title"] = "Simulador de Sonhos";
+}
+
+<div class="container mt-5">
+    <h2>Simulador de Sonhos</h2>
+    <p>Descubra quanto tempo de investimento falta para alcançar o seu grande objetivo.</p>
+
+    <form method="post">
+        <input type="hidden" asp-for="NovoSonho.Id" />
+        <div class="card p-4 mb-4 shadow-sm">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label>Qual é o seu sonho?</label>
+                    <input asp-for="NovoSonho.NomeObjetivo" class="form-control" placeholder="Ex: Viagem, Carro Novo" required />
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label>Valor do Sonho (R$)</label>
+                    <input asp-for="NovoSonho.ValorObjetivo" type="number" step="0.01" class="form-control" required />
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label>Valor Inicial (R$)</label>
+                    <input asp-for="NovoSonho.ValorInicial" type="number" step="0.01" class="form-control" required />
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label>Aporte Mensal (R$)</label>
+                    <input asp-for="NovoSonho.AporteMensal" type="number" step="0.01" class="form-control" required />
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label>Taxa Mensal (%)</label>
+                    <input asp-for="NovoSonho.TaxaJurosMensal" type="number" step="0.01" class="form-control" required />
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Calcular Tempo</button>
+        </div>
+    </form>
+
+    @if (Model.MostrarResultado)
+    {
+        <div class="row text-white text-center mt-4">
+            <div class="col-md-4">
+                <div class="card bg-success mb-3 p-3 shadow">
+                    <h5>Tempo Necessário</h5>
+                    <h3>@Model.MesesNecessarios @(Model.MesesNecessarios == 1 ? "mês" : "meses")</h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-info mb-3 p-3 shadow">
+                    <h5>Total Investido (Do seu bolso)</h5>
+                    <h3>@Model.TotalInvestido.ToString("C")</h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-warning text-dark mb-3 p-3 shadow">
+                    <h5>Ganho Apenas em Juros</h5>
+                    <h3>@Model.TotalJuros.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+    }
+</div>
